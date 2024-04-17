@@ -1,3 +1,4 @@
+#pragma once
 #include <fcntl.h>
 #include <cstdlib>
 #include <cstdio>
@@ -15,6 +16,8 @@ class Chip8State {
         uint16_t PC;
         uint64_t program_size;
         array<uint8_t, 4096> memory;
+        Chip8State();
         Chip8State(array<uint8_t, 4096> mem, uint64_t program_size);
+        void set_memory(array<uint8_t, 4096> mem);
+        void set_program_size(uint64_t program_size);
 };
-

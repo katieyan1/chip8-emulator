@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include "chip8state.h"
+#include "elf.h"
 
 #include <array>
 using namespace std;
@@ -62,6 +62,6 @@ Chip8State load_rom (int argc, char**argv){
 
     uint64_t pc = 0x0;    
     std::copy(buffer, buffer + fsize, memory.begin());
-    Chip8State state(memory, fsize);
+    Chip8State state = Chip8State(memory, fsize);
     return state;
 }
