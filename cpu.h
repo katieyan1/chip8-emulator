@@ -1,6 +1,7 @@
 #pragma once
 #include "chip8state.h"
 #include "elf.h"
+
 #include <fcntl.h>
 #include <cstdlib>
 #include <cstdio>
@@ -19,4 +20,4 @@ using std::setw;
 using std::setfill;
 
 void decode(uint16_t instruction);
-void fetch(Chip8State state);
+void fetch();

@@ -1,6 +1,10 @@
 
 #include "chip8state.h"
 #include "elf.h"
+#include "globals.h"
+#include "cpu.h"
+
+Chip8State state = Chip8State();
 
 void decode(uint16_t instruction) {
     // cout << "ins: " << setw(4) << setfill('0') << hex << instruction << endl;
@@ -28,10 +32,10 @@ void decode(uint16_t instruction) {
     uint8_t kk = instruction & 0xFF;
     printf("kk: %02x\n", kk);
     // cout << "kk: " << kk << endl;
-    
+
 }
 
-void fetch(Chip8State state) {
+void fetch() {
     while (state.PC < (state.program_size))
     {
         uint8_t *code = &state.memory[state.PC];
@@ -47,9 +51,9 @@ void fetch(Chip8State state) {
 }
 
 int main(int argc, char**argv) {
-    Chip8State state = load_rom(argc, argv);
+    load_rom(argc, argv);
 
-    fetch(state);
+    fetch();
     
     return 0;
 }

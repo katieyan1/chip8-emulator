@@ -5,6 +5,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include "elf.h"
+#include "globals.h"
 
 #include <array>
 using namespace std;
@@ -42,7 +43,7 @@ using namespace std;
 //         exit(-1);
 //     }
 
-Chip8State load_rom (int argc, char**argv){
+void load_rom (int argc, char**argv){
     array<uint8_t, 4096> memory;
     FILE *f = fopen(argv[1], "rb");
     if (f==NULL)    
@@ -62,6 +63,5 @@ Chip8State load_rom (int argc, char**argv){
 
     uint64_t pc = 0x0;    
     std::copy(buffer, buffer + fsize, memory.begin());
-    Chip8State state = Chip8State(memory, fsize);
-    return state;
+    state = Chip8State(memory, fsize);
 }
