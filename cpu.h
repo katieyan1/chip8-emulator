@@ -21,4 +21,5 @@ using std::setfill;
 using std::setw;
 
 void decode(uint16_t instruction);
+// void decode_hannah(uint16_t instruction);
 void fetch();
