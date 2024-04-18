@@ -24,6 +24,9 @@ class Chip8State {
         uint16_t PC;
         uint64_t program_size;
         array<uint8_t, 4096> memory;
+        uint8_t K;
+        uint8_t VF;
+        
         Chip8State();
         Chip8State(array<uint8_t, 4096> mem, uint64_t program_size);
         void set_memory(array<uint8_t, 4096> mem);

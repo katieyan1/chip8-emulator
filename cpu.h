@@ -16,8 +16,9 @@ using std::array;
 using std::cout;
 using std::endl;
 using std::hex;
-using std::setw;
+using std::rand;
 using std::setfill;
+using std::setw;
 
 void decode(uint16_t instruction);
 void fetch();
