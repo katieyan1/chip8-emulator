@@ -34,21 +34,91 @@ void decode(uint16_t instruction) {
     // cout << "kk: " << kk << endl;
 
     switch(op) {
-        case 8:
-            switch(nibble){
-                case 0x6:
-                    printf("8xyE");
-                    if (state.registers[x] % 2 != 0)
-                    {
-                        state.VF = 1;
-                    }
-                    else
-                    {
-                        state.VF = 0;
-                    }
-                    state.registers[x] *= 2;
+        case 0x0:
+            switch(addr) {
+                case 0x0E0:
+                    printf("00E0 - CLS: clear display for %03x\n", addr);
+                    break;
+                case 0x0EE:
+                    printf("00EE\n");
+                    state.PC = state.memory[state.SP];
+                    state.SP--;
+                    break;
+                default:
+                // default: // note: ignored in omdern interpreters
+                //     printf("0nnn - SYS addr: jump to %03x\n", addr);
+                //     state.PC = addr;
+            }
+            break;
+        case 0x1:
+            printf("1nnn\n");
+            state.PC = addr;
+            break;
+        case 0x2:
+            printf("2nnn\n");
+            state.SP++;
+            state.memory[state.SP] = state.PC;
+            state.PC = addr;
+            break;
+        case 0x3:
+            printf("3xkk\n");
+            if (state.registers[x] == kk)
+                state.PC += 2;
+            break;
+        case 0x4:
+            printf("4xkk\n");
+            if (state.registers[x] != kk)
+                state.PC += 2;
+            break;
+        case 0x5:
+            printf("5xy0\n");
+            if (state.registers[x] == state.registers[y])
+                state.PC += 2;
+            break;
+        case 0x6:
+            printf("6xkk\n");
+            state.registers[x] = kk;
+            break;
+        case 0x7:
+            printf("7xkk\n");
+            state.registers[x] = state.registers[x] + kk;
+            break;
+        case 0x8:
+            switch (nibble) {
+                case 0:
+                    printf("8xy0\n");
+                    state.registers[x] = state.registers[y];
+                    break;
+                case 1:
+                    printf("8xy1\n");
+                    state.registers[x] = state.registers[x] | state.registers[y];
+                    break;
+                case 2:
+                    printf("8xy2\n");
+                    state.registers[x] = state.registers[x] & state.registers[y];
+                    break;
+                case 3:
+                    printf("8xy3\n");
+                    state.registers[x] = state.registers[x] ^ state.registers[y];
+                    break;
+                case 4:
+                    printf("8xy4\n");
+                    uint16_t temp = (uint16_t)state.registers[x] + (uint16_t)state.registers[y];
+                    state.registers[x] = temp; // lower 8 bits
+                    state.VF = temp & 0x0100; // carry bit
+                    break;
+                case 5:
+                    printf("8xy5\n");
+                    state.VF = state.registers[x] > state.registers[y] ? 1 : 0;
+                    state.registers[x] = state.registers[x] - state.registers[y];
+                    break;
+                case 6:
+                    printf("8xy6\n");
+                    state.VF = 0x1 & state.registers[x];
+                    state.registers[x] = state.registers[x] >> 1;
+                    break;
                 case 7:
-                    printf("8xy7");
+                    printf("8xy7\n");
                     // TODO come up with enums for VF
                     if (state.registers[y] > state.registers[x])
                     {
@@ -57,9 +127,9 @@ void decode(uint16_t instruction) {
                         state.VF = 0;
                     }
                     state.registers[x] = state.registers[y] - state.registers[x];
-
+                    break;
                 case 0xE:
-                    printf("8xyE");
+                    printf("8xyE\n");
                     if (state.registers[x] / 256 != 0)
                     {
                         state.VF = 1;
@@ -69,78 +139,101 @@ void decode(uint16_t instruction) {
                         state.VF = 0;
                     }
                     state.registers[x] *= 2;
-                }
+                    break;
+                default:
+                    printf("no ins found for 0x8, nibble: %01x\n", nibble);    
+            }
+            break;
         case 9:
-            printf("9xy0");
+            printf("9xy0\n");
             if(state.registers[x] != state.registers[y]) {
                 state.PC += 2;
             }
+            break;
         case 0xA:
-            printf("Annn");
+            printf("Annn\n");
             state.I = addr;
+            break;
         case 0xB:
-            printf("Bnnn");
+            printf("Bnnn\n");
             state.PC = addr + state.registers[0] - 2;
+            break;
         case 0xC:
-            printf("Cxkk");
+            printf("Cxkk\n");
             state.registers[x] = rand() & kk;
+            break;
         case 0xD:
             // TODO 1 indicates collision, need collision
-            printf("Dxyn");
+            printf("Dxyn\n");
             state.VF = 1;
+            break;
         case 0xE:
             switch(kk) {
                 // TODO assumes one key is pressed at a time
                 case 0x9E:
-                    printf("Ex9E");
+                    printf("Ex9E\n");
                     if(state.K == state.registers[x]) {
                         state.PC += 2;
                     }
+                    break;
                 case 0xA1:
-                    printf("ExA1");
+                    printf("ExA1\n");
                     if(state.K != state.registers[x]) {
                         state.PC += 2;
-                    }                
+                    }
+                    break;
             }
+            break;
         // 8 of these
         case 0xF:
             switch(kk){
                 case 0x0A:
-                    printf("Fx0A");
+                    printf("Fx0A\n");
                     state.registers[x] = state.K;
+                    break;
                 case 0x15:
-                    printf("Fx15");
+                    printf("Fx15\n");
                     //TODO change to state.delaytimer
                     uint8_t DT = state.registers[x];
+                    break;
                 case 0x18:
-                    printf("Fx18");
+                    printf("Fx18\n");
                     //TODO change to state.soundtimer
                     uint8_t ST = state.registers[x];
+                    break;
                 case 0x1E:
-                    printf("Fx1E");
+                    printf("Fx1E\n");
                     state.I = state.I + state.registers[x];
+                    break;
                 case 0x29:
-                    printf("Fx29");
+                    printf("Fx29\n");
                     //TODO display instruction
                     state.I = state.registers[x];
+                    break;
                 case 0x33:
-                    printf("Fx33");
+                    printf("Fx33\n");
                     //TODO not sure this is right
                     uint8_t Vx = state.registers[x];
                     state.memory[state.I] = Vx/100;
                     state.memory[state.I+1] = Vx/10 % 10;
                     state.memory[state.I+2] = Vx % 100;
+                    break;
                 case 0x55:
-                    printf("Fx55");
+                    printf("Fx55\n");
                     for (int i = 0; i < x; i++) {
                         state.memory[state.I + i] = state.registers[i];
                     }
+                    break;
+
                 case 0x65:
-                    printf("Fx65");
+                    printf("Fx65\n");
                     for (int i = 0; i < x; i++) {
                         state.registers[i] = state.memory[state.I + i];
                     }
+                    break;
+
                 }
+
     }
 }
 
