@@ -1,6 +1,6 @@
 #include "chip8state.h"
 
-Chip8State::Chip8State(array<uint8_t, 4096> mem, uint64_t size) {
+Chip8State::Chip8State(array<uint8_t, MEMORY_SIZE> mem, uint64_t size) {
     PC = 0;
     SP = 0;
     DT = 0;
@@ -16,7 +16,7 @@ Chip8State::Chip8State() {
     ST = 0;
 }
 
-void Chip8State::set_memory(array<uint8_t, 4096> mem) {
+void Chip8State::set_memory(array<uint8_t, MEMORY_SIZE> mem) {
     memory = mem;
 }
 

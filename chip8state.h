@@ -8,6 +8,7 @@
 #include <array>
 #include <iostream>
 #include <iomanip>
+#include "globals.h"
 
 using std::array;
 using std::cout;
@@ -23,14 +24,14 @@ class Chip8State {
         uint16_t SP;
         uint16_t PC;
         uint64_t program_size;
-        array<uint8_t, 4096> memory;
+        array<uint8_t, MEMORY_SIZE> memory;
         uint8_t K;
         uint8_t VF;
         uint8_t DT;
         uint8_t ST;
 
         Chip8State();
-        Chip8State(array<uint8_t, 4096> mem, uint64_t program_size);
-        void set_memory(array<uint8_t, 4096> mem);
+        Chip8State(array<uint8_t, MEMORY_SIZE> mem, uint64_t program_size);
+        void set_memory(array<uint8_t, MEMORY_SIZE> mem);
         void set_program_size(uint64_t program_size);
 };

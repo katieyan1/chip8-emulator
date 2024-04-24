@@ -1,16 +1,15 @@
 #include <iostream>
 
 #include <SDL2/SDL.h>
-
-const int WIDTH = 640, HEIGHT = 320;
+#include "globals.h"
 
 int main( int argc, char *argv[] )
 {
     SDL_Init( SDL_INIT_VIDEO );
 
-    // SDL_Window *window = SDL_CreateWindow( "Hello SDL World", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI );
+    SDL_Window *window = SDL_CreateWindow( "Hello SDL World", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI );
     SDL_Renderer *renderer = nullptr;
-
+    SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
     // Check that the window was successfully created
     if ( NULL == window )
     {
@@ -25,20 +24,20 @@ int main( int argc, char *argv[] )
     {
         if ( SDL_PollEvent( &windowEvent ) )
         {
-            SDL_CreateWindowAndRenderer(800, 600, 0, &window, &renderer);
-
             //Probably on a loop
             SDL_RenderDrawPoint(renderer, 400, 300); //Renders on middle of screen.
             SDL_RenderPresent(renderer);
             if ( SDL_QUIT == windowEvent.type )
             {
+                // exit(0);
+
                 break;
             }
         }
     }
-    
     SDL_DestroyWindow( window );
     SDL_Quit( );
+
     
     return EXIT_SUCCESS;
 }

@@ -4,7 +4,7 @@
 #include "globals.h"
 #include "cpu.h"
 
-Chip8State state = Chip8State();
+Chip8State state;
 
 void decode(uint16_t instruction) {
     // cout << "ins: " << setw(4) << setfill('0') << hex << instruction << endl;
@@ -282,7 +282,7 @@ void fetch() {
 }
 
 int main(int argc, char**argv) {
-    load_rom(argc, argv);
+    state = load_rom(argc, argv);
 
     fetch();
     
