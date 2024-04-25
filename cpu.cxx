@@ -3,6 +3,7 @@
 #include "elf.h"
 #include "globals.h"
 #include "cpu.h"
+#include "display.h"
 
 Chip8State state;
 
@@ -11,26 +12,26 @@ void decode(uint16_t instruction) {
     printf("\ninstruction: %04x\n", instruction);
 
     uint8_t op = (instruction & 0xF000) >> 12;
-    // printf("op: %01x\n", op);
+    printf("op: %01x\n", op);
 
     uint16_t addr = instruction & ((1 << 12) - 1);
-    // printf("addr: %03x\n", addr);
+    printf("addr: %03x\n", addr);
     // // cout << "addr: " << addr << endl;
 
     uint8_t nibble = instruction & 0xF;
-    // printf("nibble: %01x\n", nibble);
+    printf("nibble: %01x\n", nibble);
 
     uint8_t x = (instruction & 0x0F00) >> 8;
-    // printf("x: %01x\n", x);
+    printf("x: %01x\n", x);
 
     // // cout << "x: " << x << endl;
 
     uint8_t y = (instruction & 0x00F0) >> 4;
-    // printf("y: %01x\n", y);
+    printf("y: %01x\n", y);
     // // cout << "y: " << y << endl;
 
     uint8_t kk = instruction & 0xFF;
-    // printf("kk: %02x\n", kk);
+    printf("kk: %02x\n", kk);
     // cout << "kk: " << kk << endl;
     switch(op) {
         case 0x0: {
@@ -41,8 +42,8 @@ void decode(uint16_t instruction) {
                 }
                 case 0x0EE: {
                     printf("00EE\n");
-                    state.PC = state.memory[state.SP];
                     state.SP--;
+                    state.PC = state.stack[state.SP];
                     break;
                 }
             }
@@ -55,8 +56,8 @@ void decode(uint16_t instruction) {
         }
         case 0x2:{
             printf("2nnn\n");
+            state.stack[state.SP] = state.PC;
             state.SP++;
-            state.memory[state.SP] = state.PC;
             state.PC = addr - 2;
             break;
         }
@@ -173,7 +174,7 @@ void decode(uint16_t instruction) {
         }
         case 0xB:{
             printf("Bnnn\n");
-            state.PC = addr + state.registers[0] - 2;
+            state.PC = addr + state.registers[0];
             break;
         }
         case 0xC:{
@@ -185,6 +186,7 @@ void decode(uint16_t instruction) {
             // TODO 1 indicates collision, need collision
             printf("Dxyn\n");
             state.VF = 1;
+            state.draw_flag = true;
             break;
         }
         case 0xE: {
@@ -229,13 +231,16 @@ void decode(uint16_t instruction) {
                 }
                 case 0x1E:{
                     printf("Fx1E\n");
-                    state.I = state.I + state.registers[x];
+                    state.I + state.registers[x] > 0xFFF ? state.registers[0xF] = 1 : state.registers[0xF] = 0;
+                    state.I += state.registers[x];
+                    state.I &= 0xFFF;
                     break;
                 }
                 case 0x29:{
                     printf("Fx29\n");
                     //TODO display instruction
-                    state.I = state.registers[x];
+                    state.I = state.registers[x]*5;
+                    state.I &= 0xFFF;
                     break;
                 }
                 case 0x33:{
@@ -263,28 +268,50 @@ void decode(uint16_t instruction) {
                 }
             }
         }
+        default: {
+            cout << "nothing found?!" << endl;
+        }
     }
 }
 
-void fetch() {
-    while (state.PC < (state.program_size))
-    {
-        uint8_t *code = &state.memory[state.PC];
-        printf("%04x %02x %02x", state.PC, code[0], code[1]);
+uint16_t fetch() {
+    uint8_t *code = &state.memory[state.PC];
+    printf("%04x %02x %02x\n", state.PC, code[0], code[1]);
 
-        uint16_t instruction = (code[1] << 8) | code[0];
+    uint16_t instruction = (code[1] << 8) | code[0];
 
-        decode(instruction);
+    return instruction;
 
-        state.PC += 2;    
-        printf ("\n");    
-    }    
 }
 
 int main(int argc, char**argv) {
     state = load_rom(argc, argv);
 
-    fetch();
+    Display SDL_display = Display(argv[1]);
+    state.draw_flag = true;
+
+
+    SDL_Event window_event;
+
+    uint64_t i = 0;
+    state.PC = 200;
+    while (state.PC < (state.program_size))// && i < 100000)
+    {
+        cout << i << ": ";
+        uint16_t ins = fetch();        
+        decode(ins);
+        state.PC += 2; 
+
+        if (SDL_PollEvent(&window_event) && state.draw_flag) {
+            SDL_display.render(state.display_array);
+            // state.display_array[i%state.display_array.size()] = 1;
+            // state.draw_flag = false;
+        }
+        sleep_for(std::chrono::microseconds(120000));
+    
+        i++; 
+    }    
+
     
     return 0;
 }

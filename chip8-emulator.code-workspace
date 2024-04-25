@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"unordered_map": "cpp",
+			"array": "cpp",
+			"iomanip": "cpp",
+			"ios": "cpp"
+		}
+	}
+}
