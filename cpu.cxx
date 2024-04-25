@@ -322,7 +322,7 @@ int main(int argc, char**argv) {
     uint64_t i = 0;
     state.PC = 0x200;
     array<uint32_t, WIDTH * HEIGHT> display_arr_new = state.display_array;
-    while (state.PC < 4096) // && i < 100000)
+    while (state.PC < 40s96) // && i < 100000)
     {
         cout << i << ": ";
         uint16_t ins = fetch();        
@@ -336,13 +336,13 @@ int main(int argc, char**argv) {
                     }
                 }
             }
-        if (state.draw_flag){
-            state.draw_flag = false;
-            cout << "DRAWING" << endl;
-            // sleep_for(std::chrono::microseconds(1200));
-            display_arr_new = SDL_display.render(state.display_array);
-            // state.display_array[i%state.display_array.size()] = 1;
-        }
+            if (state.draw_flag){
+                state.draw_flag = false;
+                cout << "DRAWING" << endl;
+                // sleep_for(std::chrono::microseconds(1200));
+                display_arr_new = SDL_display.render(state.display_array);
+                // state.display_array[i%state.display_array.size()] = 1;
+            }
         }
 
         state.display_array = display_arr_new;
