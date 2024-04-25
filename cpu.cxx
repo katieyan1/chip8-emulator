@@ -336,13 +336,21 @@ int main(int argc, char**argv) {
                     }
                 }
             }
-            if (state.draw_flag){
-                state.draw_flag = false;
-                cout << "DRAWING" << endl;
-                // sleep_for(std::chrono::microseconds(1200));
-                display_arr_new = SDL_display.render(state.display_array);
-                // state.display_array[i%state.display_array.size()] = 1;
-            }
+            else if(window_event.type == SDL_KEYUP) {
+                for (int i = 0; i < 16; ++i) {
+                    if (window_event.key.keysym.sym == KEYMAP[i]) {
+                        state.K = 0;
+                    }
+                }
+            }            
+
+        }
+        if (state.draw_flag){
+            state.draw_flag = false;
+            cout << "DRAWING" << endl;
+            // sleep_for(std::chrono::microseconds(1200));
+            display_arr_new = SDL_display.render(state.display_array);
+            // state.display_array[i%state.display_array.size()] = 1;
         }
 
         state.display_array = display_arr_new;
