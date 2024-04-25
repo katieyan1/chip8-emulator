@@ -1,13 +1,11 @@
 #pragma once
-// #include "chip8state.h"
-
-// extern Chip8State state;
+#include <SDL2/SDL.h>
 
 const uint64_t WIDTH = 64;
 const uint64_t HEIGHT = 32;
 const uint64_t MEMORY_SIZE = 4096;
 
-const unsigned char chip8_fontset[80] =
+const unsigned char FONTS[80] =
 {
     0xF0, 0x90, 0x90, 0x90, 0xF0, //0
     0x20, 0x60, 0x20, 0x20, 0x70, //1
@@ -25,4 +23,23 @@ const unsigned char chip8_fontset[80] =
     0xE0, 0x90, 0x90, 0x90, 0xE0, //D
     0xF0, 0x80, 0xF0, 0x80, 0xF0, //E
     0xF0, 0x80, 0xF0, 0x80, 0x80  //F
+};
+
+const uint8_t KEYMAP[16] = {
+    SDL_KeyCode::SDLK_x,
+    SDL_KeyCode::SDLK_1,
+    SDL_KeyCode::SDLK_2,
+    SDL_KeyCode::SDLK_3,
+    SDL_KeyCode::SDLK_q,
+    SDL_KeyCode::SDLK_w,
+    SDL_KeyCode::SDLK_e,
+    SDL_KeyCode::SDLK_a,
+    SDL_KeyCode::SDLK_s,
+    SDL_KeyCode::SDLK_d,
+    SDL_KeyCode::SDLK_z,
+    SDL_KeyCode::SDLK_c,
+    SDL_KeyCode::SDLK_4,
+    SDL_KeyCode::SDLK_r,
+    SDL_KeyCode::SDLK_f,
+    SDL_KeyCode::SDLK_v,
 };

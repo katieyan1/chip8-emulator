@@ -1,8 +1,8 @@
 #pragma once
 #include "chip8state.h"
 #include "elf.h"
-
-
+#include "display.h"
+#include "globals.h"
 #include <fcntl.h>
 #include <cstdlib>
 #include <cstdio>

@@ -1,9 +1,4 @@
-
-#include "chip8state.h"
-#include "elf.h"
-#include "globals.h"
 #include "cpu.h"
-#include "display.h"
 
 Chip8State state;
 
@@ -186,25 +181,26 @@ void decode(uint16_t instruction) {
         case 0xD:{
             // TODO 1 indicates collision, need collision
             printf("Dxyn\n");
-            state.registers[0xF] = 1;
-            unsigned short height = instruction & 0x000F;
-            unsigned short pixel;
-            unsigned short Vx = state.registers[x];
-            unsigned short Vy = state.registers[y];
-            for (int yline = 0; yline < height; yline++)
-            {
+            // printf("this is what is in I %d\n", state.I);
+            // printf("this is what is in memory at I %d\n", state.memory[state.I + 1]);
+            state.registers[0xF] = 0;
+            uint8_t pixel;
+            uint8_t Vx = state.registers[x];
+            uint8_t Vy = state.registers[y];
+            for (int yline = 0; yline < nibble; yline++) {
                 pixel = state.memory[state.I + yline];
-                for(int xline = 0; xline < 8; xline++)
-                {
-                    if((pixel & (0x80 >> xline)) != 0)
-                    {
-                        if(state.display_array[(Vx + xline + ((Vy + yline) * 64))] == 1)
+                for(int xline = 0; xline < 8; xline++) {
+                    printf("this is xline %d and yline %d and pixel %d\n", xline, yline, (pixel & (0x80 >> xline)));
+                    if((pixel & (0x80 >> xline)) != 0) {
+                        uint64_t pixel_index = ((Vx + xline) % WIDTH + (((Vy + yline) % HEIGHT) * 64));
+                        if (state.display_array[pixel_index] == 1)
                         {
                             state.registers[0xF] = 1;
                         }
-                        state.display_array[Vx + xline + ((Vy + yline) * 64)] ^= 1;
+                        state.display_array[pixel_index] ^= 1;
                     }
                 }
+
             }
             state.draw_flag = true;
             break;
@@ -261,17 +257,15 @@ void decode(uint16_t instruction) {
                 }
                 case 0x29:{
                     printf("Fx29\n");
-                    //TODO display instruction
                     state.I = state.registers[x]*5;
                     state.I &= 0xFFF;
                     break;
                 }
                 case 0x33:{
                     printf("Fx33\n");
-                    //TODO not sure this is right
                     uint8_t Vx = state.registers[x];
                     state.memory[state.I] = Vx/100;
-                    state.memory[state.I+1] = Vx/10 % 10;
+                    state.memory[state.I+1] = (Vx/10) % 10;
                     state.memory[state.I+2] = Vx % 100;
                     break;
                 }
@@ -296,6 +290,14 @@ void decode(uint16_t instruction) {
             cout << "nothing found?!" << endl;
         }
     }
+
+    if (state.DT > 0)
+        --state.DT;
+
+    if (state.ST > 0)
+        if(state.ST == 1);
+            // TODO: Implement sound
+        --state.ST;
 }
 
 uint16_t fetch() {
@@ -325,16 +327,24 @@ int main(int argc, char**argv) {
         cout << i << ": ";
         uint16_t ins = fetch();        
         decode(ins);
-        while(SDL_PollEvent(&window_event)) {
+        while(SDL_PollEvent(&window_event) | state.draw_flag) {
             if (window_event.type == SDL_QUIT) exit(0);
-        }
+            else if(window_event.type == SDL_KEYDOWN) {
+                for (int i = 0; i < 16; ++i) {
+                    if (window_event.key.keysym.sym == KEYMAP[i]) {
+                        state.K = i;
+                    }
+                }
+            }
         if (state.draw_flag){
             state.draw_flag = false;
             cout << "DRAWING" << endl;
-            sleep_for(std::chrono::microseconds(1200));
+            // sleep_for(std::chrono::microseconds(1200));
             display_arr_new = SDL_display.render(state.display_array);
             // state.display_array[i%state.display_array.size()] = 1;
         }
+        }
+
         state.display_array = display_arr_new;
         sleep_for(std::chrono::microseconds(1200));
         state.PC += 2; 

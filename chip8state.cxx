@@ -15,7 +15,7 @@ Chip8State::Chip8State(array<uint8_t, MEMORY_SIZE> mem, uint64_t size) {
     registers.fill(0);
 
     for (int i = 0; i < 80; ++i) {
-        memory[i] = chip8_fontset[i];
+        memory[i] = FONTS[i];
     }
 }
 
