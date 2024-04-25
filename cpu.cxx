@@ -38,6 +38,8 @@ void decode(uint16_t instruction) {
             switch(addr) {
                 case 0x0E0: {
                     printf("00E0 - CLS: clear display for %03x\n", addr);
+                    state.display_array.fill(0);
+                    state.draw_flag = true;
                     break;
                 }
                 case 0x0EE: {
@@ -115,7 +117,7 @@ void decode(uint16_t instruction) {
                     printf("8xy4\n");
                     uint16_t temp = (uint16_t)state.registers[x] + (uint16_t)state.registers[y];
                     state.registers[x] = temp; // lower 8 bits
-                    state.registers[0xF] = temp & 0x0100; // carry bit
+                    state.registers[0xF] = temp > 0x0FF ? 1 : 0; // carry bit
                     break;
                 }
                 case 5:{
@@ -132,7 +134,6 @@ void decode(uint16_t instruction) {
                 }
                 case 7:{
                     printf("8xy7\n");
-                    // TODO come up with enums for VF
                     if (state.registers[y] > state.registers[x])
                     {
                         state.registers[0xF] = 1;
@@ -186,6 +187,25 @@ void decode(uint16_t instruction) {
             // TODO 1 indicates collision, need collision
             printf("Dxyn\n");
             state.registers[0xF] = 1;
+            unsigned short height = instruction & 0x000F;
+            unsigned short pixel;
+            unsigned short Vx = state.registers[x];
+            unsigned short Vy = state.registers[y];
+            for (int yline = 0; yline < height; yline++)
+            {
+                pixel = state.memory[state.I + yline];
+                for(int xline = 0; xline < 8; xline++)
+                {
+                    if((pixel & (0x80 >> xline)) != 0)
+                    {
+                        if(state.display_array[(Vx + xline + ((Vy + yline) * 64))] == 1)
+                        {
+                            state.registers[0xF] = 1;
+                        }
+                        state.display_array[Vx + xline + ((Vy + yline) * 64)] ^= 1;
+                    }
+                }
+            }
             state.draw_flag = true;
             break;
         }
@@ -281,7 +301,7 @@ uint16_t fetch() {
     uint8_t *code = &state.memory[state.PC];
     printf("%04x %02x %02x\n", state.PC, code[0], code[1]);
 
-    uint16_t instruction = (code[1] << 8) | code[0];
+    uint16_t instruction = (code[0] << 8) | code[1];
 
     return instruction;
 
@@ -291,13 +311,13 @@ int main(int argc, char**argv) {
     state = load_rom(argc, argv);
 
     Display SDL_display = Display(argv[1]);
-    state.draw_flag = true;
+    // state.draw_flag = true;
 
 
     SDL_Event window_event;
 
     uint64_t i = 0;
-    state.PC = 0;
+    state.PC = 0x200;
     array<uint32_t, WIDTH * HEIGHT> display_arr_new = state.display_array;
     while (state.PC < (state.program_size)) // && i < 100000)
     {

@@ -21,14 +21,35 @@ Chip8State load_rom (int argc, char**argv){
 
     //Get the file size    
     fseek(f, 0L, SEEK_END);    
-    uint64_t fsize = ftell(f);    
+    uint64_t rom_size = ftell(f);    
     fseek(f, 0L, SEEK_SET);
 
-    uint8_t buffer[fsize];
-    fread(buffer, fsize, 1, f);
-    fclose(f);
+    // Allocate memory to store rom
+    char* rom_buffer = (char*) malloc(sizeof(char) * rom_size);
+    if (rom_buffer == NULL) {
+        std::cerr << "Failed to allocate memory for ROM" << std::endl;
+    }
 
-    uint64_t pc = 0x0;    
-    std::copy(buffer, buffer + fsize, memory.begin());
-    return Chip8State(memory, fsize);
+    // Copy ROM into buffer
+    size_t result = fread(rom_buffer, sizeof(char), (size_t)rom_size, f);
+    if (result != rom_size) {
+        std::cerr << "Failed to read ROM" << std::endl;
+    }
+
+    // Copy buffer to memory
+    if ((4096-512) > rom_size){
+        for (int i = 0; i < rom_size; ++i) {
+            memory[i + 512] = (uint8_t)rom_buffer[i];   // Load into memory starting
+                                                        // at 0x200 (=512)
+        }
+    }
+    else {
+        std::cerr << "ROM too large to fit in memory" << std::endl;
+    }
+
+    // Clean up
+    fclose(f);
+    free(rom_buffer);
+
+    return Chip8State(memory, rom_size);
 }
