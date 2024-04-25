@@ -290,6 +290,7 @@ void decode(uint16_t instruction) {
                     break;
                 }
             }
+            break;
         }
         default: {
             cout << "nothing found?!" << endl;
@@ -319,24 +320,23 @@ int main(int argc, char**argv) {
     uint64_t i = 0;
     state.PC = 0x200;
     array<uint32_t, WIDTH * HEIGHT> display_arr_new = state.display_array;
-    while (state.PC < (state.program_size)) // && i < 100000)
+    while (state.PC < 4096) // && i < 100000)
     {
         cout << i << ": ";
         uint16_t ins = fetch();        
         decode(ins);
-        while(SDL_PollEvent(&window_event)){
+        while(SDL_PollEvent(&window_event)) {
             if (window_event.type == SDL_QUIT) exit(0);
-
-        };
+        }
         if (state.draw_flag){
             state.draw_flag = false;
             cout << "DRAWING" << endl;
-            sleep_for(std::chrono::microseconds(120000));
+            sleep_for(std::chrono::microseconds(1200));
             display_arr_new = SDL_display.render(state.display_array);
             // state.display_array[i%state.display_array.size()] = 1;
         }
         state.display_array = display_arr_new;
-        sleep_for(std::chrono::microseconds(120000));
+        sleep_for(std::chrono::microseconds(1200));
         state.PC += 2; 
 
         i++; 
