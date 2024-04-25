@@ -115,18 +115,18 @@ void decode(uint16_t instruction) {
                     printf("8xy4\n");
                     uint16_t temp = (uint16_t)state.registers[x] + (uint16_t)state.registers[y];
                     state.registers[x] = temp; // lower 8 bits
-                    state.VF = temp & 0x0100; // carry bit
+                    state.registers[0xF] = temp & 0x0100; // carry bit
                     break;
                 }
                 case 5:{
                     printf("8xy5\n");
-                    state.VF = state.registers[x] > state.registers[y] ? 1 : 0;
+                    state.registers[0xF] = state.registers[x] > state.registers[y] ? 1 : 0;
                     state.registers[x] = state.registers[x] - state.registers[y];
                     break;
                 }
                 case 6:{
                     printf("8xy6\n");
-                    state.VF = 0x1 & state.registers[x];
+                    state.registers[0xF] = 0x1 & state.registers[x];
                     state.registers[x] = state.registers[x] >> 1;
                     break;
                 }
@@ -135,9 +135,9 @@ void decode(uint16_t instruction) {
                     // TODO come up with enums for VF
                     if (state.registers[y] > state.registers[x])
                     {
-                        state.VF = 1;
+                        state.registers[0xF] = 1;
                     } else {
-                        state.VF = 0;
+                        state.registers[0xF] = 0;
                     }
                     state.registers[x] = state.registers[y] - state.registers[x];
                     break;
@@ -146,11 +146,11 @@ void decode(uint16_t instruction) {
                     printf("8xyE\n");
                     if (state.registers[x] / 256 != 0)
                     {
-                        state.VF = 1;
+                        state.registers[0xF] = 1;
                     }
                     else
                     {
-                        state.VF = 0;
+                        state.registers[0xF] = 0;
                     }
                     state.registers[x] *= 2;
                     break;
@@ -174,7 +174,7 @@ void decode(uint16_t instruction) {
         }
         case 0xB:{
             printf("Bnnn\n");
-            state.PC = addr + state.registers[0];
+            state.PC = addr + state.registers[0] -2;
             break;
         }
         case 0xC:{
@@ -185,7 +185,7 @@ void decode(uint16_t instruction) {
         case 0xD:{
             // TODO 1 indicates collision, need collision
             printf("Dxyn\n");
-            state.VF = 1;
+            state.registers[0xF] = 1;
             state.draw_flag = true;
             break;
         }
@@ -212,6 +212,11 @@ void decode(uint16_t instruction) {
         // 8 of these
         case 0xF: {
             switch(kk){
+                case 0x7:{
+                    printf("Fx07\n");
+                    state.registers[x] = state.DT;
+                    break;
+                }
                 case 0x0A:{
                     printf("Fx0A\n");
                     state.registers[x] = state.K;
@@ -219,13 +224,11 @@ void decode(uint16_t instruction) {
                 }
                 case 0x15:{
                     printf("Fx15\n");
-                    //TODO change to state.delaytimer
                     state.DT = state.registers[x];
                     break;
                 }
                 case 0x18:{
                     printf("Fx18\n");
-                    //TODO change to state.soundtimer
                     state.ST = state.registers[x];
                     break;
                 }
@@ -294,21 +297,28 @@ int main(int argc, char**argv) {
     SDL_Event window_event;
 
     uint64_t i = 0;
-    state.PC = 200;
-    while (state.PC < (state.program_size))// && i < 100000)
+    state.PC = 0;
+    array<uint32_t, WIDTH * HEIGHT> display_arr_new = state.display_array;
+    while (state.PC < (state.program_size)) // && i < 100000)
     {
         cout << i << ": ";
         uint16_t ins = fetch();        
         decode(ins);
+        while(SDL_PollEvent(&window_event)){
+            if (window_event.type == SDL_QUIT) exit(0);
+
+        };
+        if (state.draw_flag){
+            state.draw_flag = false;
+            cout << "DRAWING" << endl;
+            sleep_for(std::chrono::microseconds(120000));
+            display_arr_new = SDL_display.render(state.display_array);
+            // state.display_array[i%state.display_array.size()] = 1;
+        }
+        state.display_array = display_arr_new;
+        sleep_for(std::chrono::microseconds(120000));
         state.PC += 2; 
 
-        if (SDL_PollEvent(&window_event) && state.draw_flag) {
-            SDL_display.render(state.display_array);
-            // state.display_array[i%state.display_array.size()] = 1;
-            // state.draw_flag = false;
-        }
-        sleep_for(std::chrono::microseconds(120000));
-    
         i++; 
     }    
 

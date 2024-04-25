@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <string>
+#include <array>
 #include "globals.h"
 
 using std::string;
@@ -19,7 +20,7 @@ class Display {
         SDL_Texture *texture{};
         Display(string title);
         ~Display();
-        void render(array<uint32_t, WIDTH * HEIGHT> &screen);
+        array<uint32_t, WIDTH * HEIGHT> render(array<uint32_t, WIDTH * HEIGHT> screen);
         
 };
 // void set_pixel(uint16_t x, uint16_t y, uint32_t pixel);

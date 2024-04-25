@@ -64,7 +64,7 @@ Display::~Display() {
     // delete mode;
 }
 
-void Display::render(array<uint32_t, WIDTH * HEIGHT> &screen) {
+array<uint32_t, WIDTH * HEIGHT> Display::render(array<uint32_t, WIDTH * HEIGHT> screen) {
     array<uint32_t, WIDTH*HEIGHT> pixels;
     for (int i = 0; i < WIDTH*HEIGHT; ++i) {
         uint8_t pixel = screen[i];
@@ -75,7 +75,7 @@ void Display::render(array<uint32_t, WIDTH * HEIGHT> &screen) {
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
-
+    return pixels;
 }
 
 // void set_pixel(uint16_t x, uint16_t y, uint32_t pixel) {
