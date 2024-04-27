@@ -68,7 +68,8 @@ array<uint32_t, WIDTH * HEIGHT> Display::render(array<uint32_t, WIDTH * HEIGHT> 
     array<uint32_t, WIDTH*HEIGHT> pixels;
     for (int i = 0; i < WIDTH*HEIGHT; ++i) {
         uint8_t pixel = screen[i];
-        pixels[i] = (0x00FFFFFF * pixel) | 0xFF000000;
+        // pixels[i] = (0x00FFFFFF * pixel) | 0xFF000000;
+        pixels[i] = (0x00FFFFFF * pixel) | 0x85858500;
     }
     SDL_UpdateTexture(texture, NULL, &pixels, 64 * sizeof(Uint32));
     // Clear screen and render

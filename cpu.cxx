@@ -327,7 +327,7 @@ int main(int argc, char**argv) {
         cout << i << ": ";
         uint16_t ins = fetch();        
         decode(ins);
-        while(SDL_PollEvent(&window_event) | state.draw_flag) {
+        while(SDL_PollEvent(&window_event)) {
             if (window_event.type == SDL_QUIT) exit(0);
             else if(window_event.type == SDL_KEYDOWN) {
                 for (int i = 0; i < 16; ++i) {
