@@ -14,6 +14,7 @@ class Input {
         vector<uint8_t> previous_keys;
     
     Input();
+    ~Input();
     void update();
     void get_keyboard();
     uint8_t get_key(SDL_Scancode sc);
