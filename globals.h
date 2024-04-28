@@ -26,20 +26,23 @@ const unsigned char FONTS[80] =
 };
 
 const uint8_t KEYMAP[16] = {
-    SDL_KeyCode::SDLK_x,
-    SDL_KeyCode::SDLK_1,
+    SDL_KeyCode::SDLK_1, // row 1
     SDL_KeyCode::SDLK_2,
     SDL_KeyCode::SDLK_3,
-    SDL_KeyCode::SDLK_q,
+    SDL_KeyCode::SDLK_4,
+
+    SDL_KeyCode::SDLK_q, // row 2
     SDL_KeyCode::SDLK_w,
     SDL_KeyCode::SDLK_e,
-    SDL_KeyCode::SDLK_a,
+    SDL_KeyCode::SDLK_r,
+
+    SDL_KeyCode::SDLK_a, // row 3
     SDL_KeyCode::SDLK_s,
     SDL_KeyCode::SDLK_d,
-    SDL_KeyCode::SDLK_z,
-    SDL_KeyCode::SDLK_c,
-    SDL_KeyCode::SDLK_4,
-    SDL_KeyCode::SDLK_r,
     SDL_KeyCode::SDLK_f,
+
+    SDL_KeyCode::SDLK_z, // row 4
+    SDL_KeyCode::SDLK_x,
+    SDL_KeyCode::SDLK_c,
     SDL_KeyCode::SDLK_v,
 };

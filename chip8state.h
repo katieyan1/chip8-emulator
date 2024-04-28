@@ -10,6 +10,7 @@
 #include <iomanip>
 #include "globals.h"
 #include "display.h"
+#include "input.h"
 
 using std::array;
 using std::cout;
@@ -27,7 +28,7 @@ class Chip8State {
         uint64_t program_size;
         array<uint16_t, 16> stack;
         array<uint8_t, MEMORY_SIZE> memory;
-        uint8_t K;
+        Input key_states;
         uint8_t VF;
         uint8_t DT;
         uint8_t ST;

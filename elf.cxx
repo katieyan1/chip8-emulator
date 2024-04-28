@@ -29,7 +29,7 @@ Chip8State load_rom (int argc, char**argv){
     // Copy buffer to memory
     if ((4096-512) > rom_size){
         for (int i = 0; i < rom_size; ++i) {
-            memory[i + 512] = (uint8_t)rom_buffer[i];   // Load into memory starting
+            memory[i + 512] = (uint8_t) rom_buffer[i];   // Load into memory starting
                                                         // at 0x200 (=512)
         }
     }
