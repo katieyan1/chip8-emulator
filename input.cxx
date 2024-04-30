@@ -23,6 +23,7 @@ uint8_t Input::get_key(SDL_Scancode sc) {
     return (uint8_t) (previous_keys[sc] && current_keys[sc]);
 }
 
+/* */
 void Input::handle_input() {
     keys[0] = get_key(SDL_SCANCODE_1);
     keys[1] = get_key(SDL_SCANCODE_2);

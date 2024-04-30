@@ -22,16 +22,15 @@ using std::setfill;
 class Chip8State {
     public:
         array<uint8_t, 16> registers;
-        uint16_t I;
-        uint16_t SP;
+        uint16_t I; // register used for storing memory addresses
+        uint16_t SP; // stack pointer 
         uint16_t PC;
         uint64_t program_size;
         array<uint16_t, 16> stack;
         array<uint8_t, MEMORY_SIZE> memory;
         Input key_states;
-        uint8_t VF;
-        uint8_t DT;
-        uint8_t ST;
+        uint8_t DT; // delay timer
+        uint8_t ST; // sound timer
         array<uint32_t, WIDTH*HEIGHT> display_array;
         bool draw_flag;
 
